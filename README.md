@@ -17,7 +17,7 @@ API for user api keys management.
 ```method: POST host:5000/api/v1/login```
 
 | Body           | Type        | Description                                  |
-| :------------  | :---------- | :------------------------------------------- |
+| ------------  | :---------- | :------------------------------------------- |
 | `identifier`   | `str`       | **Required**. username or email of the user  |
 | `password`     | `str`       | **Required**. Password of the user           |
 
@@ -41,15 +41,15 @@ API for user api keys management.
 
 ```method: POST host:5000/api/v1/users/<string:filter_by>```
 
-| Request parameters | Type        | Description                                                                                                 |
+| URL parameters     | Type        | Description                                                                                                 |
 | :----------------- | :---------- | :---------------------------------------------------------------------------------------------------------  |
 | `filter_by`        | `str`       | **Required.** Only one of the following must be provides: `id`, `username`, `email`, `date`, `role`, `all`. |
 
-| Query parameters   | Type        | Description                                                                                                 |
-| :----------------- | :---------- | :---------------------------------------------------------------------------------------------------------  |
-| `value`            | `str`       | **Required.**. The value must be provided depending on filter_by parameter.                                 |
-| `limit`            | `int`       | **Not Required.** Limit of elementes you want to bring on your request, default = 10.                       |
-| `page`             | `int`       | **Not Required.** Number of the page you want to bring on your request, default = 1.                        |
+| Query parme   | Type        | Description                                                                                 |
+| :----------------- | :---------- | :--------------------------------------------------------------------------------------|
+| `value`            | `str`       | **Required.**. The value must be provided depending on filter_by parameter.            |
+| `limit`            | `int`       | **Not Required.** Limit of elementes you want to bring on your request, default = 10.  |
+| `page`             | `int`       | **Not Required.** Number of the page you want to bring on your request, default = 1.   |
 
 
 #### Requests examples:
@@ -108,15 +108,15 @@ token only.
 
 In the other side **admin users** are allowed to modify the following parameters:
 
-| Body Params    | Type        | Description                                                    |
+| Body Params    | Type        | Description                        |
 | :------------  | :---------- | :------------------------------------------------------------- |
 | `identifier`   | `str`       | **Required**. Identifier of user `username` or `email` or `id`.|
-| `first_name`   | `str`       | **Optional**. First name of user.                               |
-| `last_name`    | `str`       | **Optional**. Last name of user.                                |
-| `password`     | `str`       | **Optional**. Password of user.                                 |
-| `email`        | `str`       | **Optional**. Email of the user.                                |
-| `address`      | `str`       | **Optional**. Adress of the user.                               |
-| `role`         | `int`       | **Optional**. Adress of the user.                               |
+| `first_name`   | `str`       | **Optional**. First name of user.   |
+| `last_name`    | `str`       | **Optional**. Last name of user.    |
+| `password`     | `str`       | **Optional**. Password of user.     |
+| `email`        | `str`       | **Optional**. Email of the user.    |
+| `address`      | `str`       | **Optional**. Adress of the user.   |
+| `role`         | `int`       | **Optional**. Adress of the user.   |
 
 ### DELETE
 **Accessible: Admins**
