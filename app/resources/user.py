@@ -96,7 +96,11 @@ class FilterUser(Resource):
             if not is_admin():
                 return {"msg": "Forbidden"}, 403
             page = request.args.get("page", default=1, type=int)
+            if page < 1:
+                return {"msg": "page must be greater than 0"}, 400
             limit = request.args.get("limit", default=10, type=int)
+            if limit < 1:
+                return {"msg": "limit must be greater than 0"}, 400
             value = request.args.get("value", default=None, type=str)
             if value is None and filter_by != "all":
                 return {"msg": "param: {value} is required"}, 400

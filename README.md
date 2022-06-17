@@ -2,29 +2,71 @@
 API for user api keys management.
 
 ### The API contains three main group of endpoints and two levels of administration (default user and admin).
-## The main group of endpoints are:
 
-    - USERS
-    - BILLINGS
-    - KEYS
+### The main group of endpoints are:
 
-### Note: The authentication is done using the JWT token and storing the following information in the token:
-    {   
-        "id",
-        "username",
-        "verified",
-        "role"
-    }
-### The token is stored in cookies of client side and is sent in the header of each request.
-### The token is valid for 30 minutes and is refreshed on every endpoint call.
+  - AUTH
+  - USERS
+  - BILLINGS
+  - KEYS
 
-#### Default user can only access to the following endpoints:
-```http
-  method: POST
-  host:5000/api/v1/users
-```
+# AUTH 
+#### If a user is already registeres you can provide your credential and login, otherwise you must register yourself <link to post user>.
+## Supported endpoints:  
+### LOGIN 
+```method: POST host:5000/api/v1/login```
 
-| Body           | Type        | Description                      |
+| Body           | Type        | Description                                  |
+| :------------  | :---------- | :------------------------------------------- |
+| `identifier`   | `str`       | **Required**. username or email of the user  |
+| `password`     | `str`       | **Required**. Password of the user           |
+
+#### **Notes**
+- The authentication of a user is done using the JWT token and storing the following information in the encoded token: `id`, `username`, `verified`, `role`.
+
+- The token is stored in cookies and is sent in the header of each request. 
+- The token is valid for 30 minutes and is refreshed on every endpoint call.
+
+
+### LOGOUT
+```method: POST host:5000/api/v1/logout```
+#### **Notes**    
+- This endpoint needs to parse the jwt token in the request as cookie to expire the token.
+
+# Users
+## Supported endpoints.
+
+### GET 
+**Accessible: Admins**
+
+```method: POST host:5000/api/v1/users/<string:filter_by>```
+
+| Request parameters | Type        | Description                                                                                                 |
+| :----------------- | :---------- | :---------------------------------------------------------------------------------------------------------  |
+| `filter_by`        | `str`       | **Required.** Only one of the following must be provides: `id`, `username`, `email`, `date`, `role`, `all`. |
+
+| Query parameters   | Type        | Description                                                                                                 |
+| :----------------- | :---------- | :---------------------------------------------------------------------------------------------------------  |
+| `value`            | `str`       | **Required.**. The value must be provided depending on filter_by parameter.                                 |
+| `limit`            | `int`       | **Not Required.** Limit of elementes you want to bring on your request, default = 10.                       |
+| `page`             | `int`       | **Not Required.** Number of the page you want to bring on your request, default = 1.                        |
+
+
+#### Requests examples:
+
+  - ```host:5000/api/v1/users/username?value=TestUS20```
+  - ```host:5000/api/v1/users/id?value=1200```
+  - ```host:5000/api/v1/users/date?value=YYYY-MM-DD&page=3```
+  - ```host:5000/api/v1/users/email?value=test@gmail.com```
+  - ```host:5000/api/v1/users/role?value=2```
+  - ```host:5000/api/v1/users/all?page=2&limit=8```
+
+### POST
+**Accessible: All**
+
+```method: POST host:5000/api/v1/users```
+
+| Body Parameters| Type        | Description                      |
 | :------------  | :---------- | :------------------------------  |
 | `first_name`   | `str`       | **Required**. First name of user |
 | `last_name`    | `str`       | **Required**. Last name of user  |
@@ -32,104 +74,64 @@ API for user api keys management.
 | `password`     | `str`       | **Required**. Password of user   |
 | `email`        | `str`       | **Required**. Email of the user  |
 | `address`      | `str`       | **Required**. Adress of the user |
-| `role`         | `int`       | **Not required**. Role assigned  |
 
-### Body example:
+Body example:
+
         {
             "first_name": "<name>", 
             "last_name": "<last_name>",
             "username": "<username>", **Alphanumeric only** **Unmuttable**
             "password": "<password>", **Must have at least one character of the following [A-Z][a-z][0-9][@$!%*#?&]**
             "email": "<email>", **Must be a valid email**
-            "address": "<address>", **Full address**
-            "role": "<role>" **1/2**
+            "address": "<address>" **Full address**
         }
+                            
+**Note:** Must be application/json.
 
-```http
-  method: PUT
-  host:5000/api/v1/users
-```
-| Body           | Type        | Description                      |
-| :------------  | :---------- | :------------------------------  |
-| `first_name`   | `str`       | **Optional**. First name of user |
-| `last_name`    | `str`       | **Optional**. Last name of user  |
-| `password`     | `str`       | **Optional**. Password of user   |
-| `email`        | `str`       | **Optional**. Email of the user  |
-| `address`      | `str`       | **Optional**. Adress of the user |
-**Note:** The id of the user will be retreived from the token only, unless 
-    the user has admin privileges.
+### PUT
+**Accessible: Registered users and admins**
 
-### Body example:
-        {
-            "first_name": "<name>", 
-            "last_name": "<last_name>",
-            "username": "<username>",
-            "password": "<password>",
-            "email": "<email>",
-            "address": "<address>",
-            "role": "<role>"
-        }
+```method: PUT host:5000/api/v1/users```
 
-#### GET all employees
+Default users are allowed to update the following parameters:
 
-```http
-  method: GET
-  localhost:8001/api/employees
-```
+| Body Params    | Type        | Description                       |
+| :------------  | :---------- | :-------------------------------  |
+| `first_name`   | `str`       | **Optional**. First name of user. |
+| `last_name`    | `str`       | **Optional**. Last name of user.  |
+| `password`     | `str`       | **Optional**. Password of user.   |
+| `email`        | `str`       | **Optional**. Email of the user.  |
+| `address`      | `str`       | **Optional**. Adress of the user. |
 
-#### POST employee
+**Note:** The id of the user will be retreived from the 
+token only.
 
-```http
-  method: POST
-  localhost:8001/api/employee
-```
+In the other side **admin users** are allowed to modify the following parameters:
 
-| Parameter  | Type     | Description                 |
-| :--------  | :------- | :-------------------------  |
-| `emp_name` | `string` | **Required**. Employee name |
-| `emp_id`   | `int`    | **Required**. Employee id   |
+| Body Params    | Type        | Description                                                    |
+| :------------  | :---------- | :------------------------------------------------------------- |
+| `identifier`   | `str`       | **Required**. Identifier of user `username` or `email` or `id`.|
+| `first_name`   | `str`       | **Optional**. First name of user.                               |
+| `last_name`    | `str`       | **Optional**. Last name of user.                                |
+| `password`     | `str`       | **Optional**. Password of user.                                 |
+| `email`        | `str`       | **Optional**. Email of the user.                                |
+| `address`      | `str`       | **Optional**. Adress of the user.                               |
+| `role`         | `int`       | **Optional**. Adress of the user.                               |
 
+### DELETE
+**Accessible: Admins**
 
-### The API (Timesheet) support the following operations:
-    READ: Return a json with timesheet entries.
-    CREATE: Create a new timesheet entry.
-#### GET all timesheet entries
+```method: DELETE host:5000/api/v1/users```
 
-```http
-  method: GET
-  localhost:8000/api/timesheet
-```
+| Query parameters   | Type        | Description                             |
+| :----------------- | :---------- | :-------------------------------------- |
+| `id`               | `str`       | **Required**. Id of user to be deleted. |
 
-#### POST a timesheet entry
+#### Requests examples:
 
-```http
-  method: POST
-  localhost:8000/api/timesheet
-```
-
-| Parameter     | Type     | Description                         |
-| :------------ | :------- | :---------------------------------- |
-| `emp_id`      | `int`    | **Required**. Employee id           |
-| `hours`       | `int`    | **Required**. Hours worked by emp   |
-| `description` | `string` | **Required**. Description           |
-
-### The timesheet API comsumps employeed API data and verifies if the employee is in the database as well as if id provided is valid.
-
-### For installation, please create a python virtual environment and install requirements.txt.
-
-    pip install -r requirements.txt
-
-### Once installated and activated, run 2 simultaneous terminal and execute below.
-    On terminal 1:
-       Go to backend/employees_api and run:
-           uvicorn main:app --reload --port 8001
-    
-    On terminal 2:
-        Go to backend/timesheet_api and run:
-            uvicorn main:app --reload --port 8000
+  - ```host:5000/api/v1/users?id=XXXX```
 
 
-#### If the step before was completed successfully, you must have running the server on your local host.
 
-    In order to test the API, you can use the following URL:
-            localhost:8001/docs (for the API documentation)
+## Author
+- [X] [@alexiszamudio](https://github.com/AlexisZamudioOrtega08)
