@@ -1,8 +1,7 @@
 # API-MANAGEMENT
 API for user api keys management.
 
-### The API contains three main group of endpoints and two levels
-### of administration (default user and admin).
+### The API contains three main group of endpoints and two levels of administration (default user and admin).
 ## The main group of endpoints are:
 
     - USERS
