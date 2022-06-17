@@ -8,16 +8,14 @@ API for user api keys management.
     - BILLINGS
     - KEYS
 
-### Note: The authentication is done using the JWT token and storing
-### the following information in the token:
+### Note: The authentication is done using the JWT token and storing the following information in the token:
     {   
         "id",
         "username",
         "verified",
         "role"
     }
-### The token is stored in cookies of client side and is sent in the
-### header of each request.
+### The token is stored in cookies of client side and is sent in the header of each request.
 ### The token is valid for 30 minutes and is refreshed on every endpoint call.
 
 #### Default user can only access to the following endpoints:
