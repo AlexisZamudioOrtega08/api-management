@@ -16,6 +16,26 @@ class User(Resource):
         self.message = {"user": "fail", "billing": "fail"}
 
     @jwt_required()
+    def get(self):
+        try:
+            _, id = is_admin(to_return=True)
+            user = UserModel.find_by(id=id)
+        except (Exception, ValueError) as e:
+            if e.__class__.__name__ == "ValueError":
+                if e.args[0] == "Forbidden.":
+                    return {"msg": "You are not authorized to change role"}, 403
+                return {"msg": str(e)}, 400
+            elif e.__class__.__name__ == "IntegrityError":
+                return {"msg": str(e)}, 400
+            else:
+                return {"msg": "Something went wrong"}, 500
+        else:
+            if user:
+                return {"user": user.json()}, 200
+            else:
+                return {"msg": "user not found"}, 404
+
+    @jwt_required()
     @validate()
     def put(self, body: UpdateUserSchema):
         try:

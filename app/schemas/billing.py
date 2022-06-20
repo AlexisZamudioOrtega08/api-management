@@ -7,7 +7,6 @@ class BillingSchema(BaseModel):
     user_id: int
     balance: Optional[float]
     billing_address: Optional[str]
-    flag: Optional[bool]
 
     @validator("billing_address")
     def validate_billing_address(cls, v):
@@ -22,12 +21,6 @@ class BillingSchema(BaseModel):
         else:
             return v
 
-    @validator("flag")
-    def check_flag(cls, v):
-        if v is None:
-            return False
-        return v
-
     @validator("user_id")
     def check_user_id(cls, v):
         if isinstance(v, int):
@@ -41,7 +34,6 @@ class UpdateBillingSchema(BillingSchema):
     id: Optional[int]
     balance: Optional[float]
     billing_address: Optional[str]
-    flag: Optional[bool]
 
     @validator("id")
     def check_id(cls, v):

@@ -37,15 +37,20 @@ roles = {
 }
 
 
-def is_admin() -> bool:
+def is_admin(to_return=False) -> bool:
     """
     Check if the user is an admin.
     """
     user = get_jwt_identity()
     role = str(user.get("role"))
+    id = str(user.get("id"))
     if roles[role][0] == "adm":
+        if to_return:
+            return True, id
         return True
     else:
+        if to_return:
+            return False, id
         return False
 
 

@@ -33,7 +33,7 @@ api.add_resource(
     User,
     "{}/users".format(api_prefix),
     endpoint="users",
-    methods=["PUT", "POST", "DELETE"],
+    methods=["GET", "PUT", "POST", "DELETE"],
 )
 api.add_resource(
     FilterKey,
@@ -42,7 +42,7 @@ api.add_resource(
     methods=["GET"],
 )
 api.add_resource(
-    Key, "{}/keys".format(api_prefix), endpoint="keys", methods=["POST", "DELETE"]
+    Key, "{}/keys".format(api_prefix), endpoint="keys", methods=["GET", "POST", "DELETE"]
 )
 api.add_resource(
     FilterBilling,
@@ -54,7 +54,7 @@ api.add_resource(
     Billing,
     "{}/billings".format(api_prefix),
     endpoint="billings",
-    methods=["POST", "PUT", "DELETE"],
+    methods=["GET", "POST", "PUT", "DELETE"],
 )
 
 

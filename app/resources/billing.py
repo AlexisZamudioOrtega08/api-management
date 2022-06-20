@@ -10,9 +10,33 @@ from flask_jwt_extended import jwt_required
 
 class Billing(Resource):
     @jwt_required()
+    def get(self):
+        try:
+            _, id = is_admin(to_return=True)
+            billing = BillingModel.find_by(user_id=id)
+        except (Exception, ValueError) as e:
+            if e.__class__.__name__ == "ValueError":
+                if e.args[0] == "Forbidden.":
+                    return {"msg": "You are not authorized to change role"}, 403
+                return {"msg": str(e)}, 400
+            elif e.__class__.__name__ == "IntegrityError":
+                return {"msg": str(e)}, 400
+            else:
+                if billing:
+                    billing.rollback()
+                return {"msg": "Something went wrong"}, 500
+        else:
+            if billing:
+                return {"bill": billing.json()}, 200
+            else:
+                return {"msg": "billing not found"}, 404
+
+    @jwt_required()
     @validate()
     def post(self, body: BillingSchema):
         try:
+            if not is_admin():
+                return {"msg": "Forbidden"}, 403
             bill = BillingModel.find_by(user_id=body.user_id)
             if bill:
                 return {"msg": "A billing linked to user already exist."}, 400
@@ -58,17 +82,31 @@ class Billing(Resource):
                 201,
             )
 
+    @jwt_required()
     def delete(self):
         try:
+            bill = None
+            if not is_admin():
+                raise ValueError("Forbidden.")
             id = request.args.get("id", default=0, type=int)
-            if id == 0:
+            if id <= 0:
                 return {"message": "id is required"}, 400
             bill = BillingModel.find_by(id=id)
-            bill.delete_from_db()
-        except:
+            if bill:
+                bill.delete_from_db()
+            else:
+                return {"msg": "billing not found"}, 404
+        except (Exception, ValueError) as e:
             if bill:
                 bill.rollback()
-            return {"message": "Something went wrong"}, 500
+            if e.__class__.__name__ == "ValueError":
+                if e.args[0] == "Forbidden.":
+                    return {"msg": "Forbidden."}, 403
+                return {"msg": str(e)}, 400
+            elif e.__class__.__name__ == "IntegrityError":
+                return {"msg": str(e)}, 400
+            else:
+                return {"msg": "Something went wrong"}, 500
         else:
             if bill:
                 bill.commit()

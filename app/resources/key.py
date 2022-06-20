@@ -5,6 +5,7 @@ from flask_restful import Resource, request
 
 from models.key import Key as KeyModel
 from models.user import User as UserModel
+from models.billing import Billing as BillingModel
 
 from flask_pydantic import validate
 from schemas.key import KeySchema
@@ -14,6 +15,33 @@ from common.util import filter
 
 
 class Key(Resource):
+
+    @jwt_required()
+    def get(self):
+        try:
+            _, id = is_admin(to_return=True)
+            billing = BillingModel.find_by(user_id=id)
+            if billing:
+                keys = KeyModel.find_by(all=True, billing_id=billing.id)
+            else:
+                return {"msg": "billing not found"}, 404
+
+        except (Exception, ValueError) as e:
+            if e.__class__.__name__ == "ValueError":
+                if e.args[0] == "Forbidden.":
+                    return {"msg": "Forbidden."}, 403
+                return {"msg": str(e)}, 400
+            elif e.__class__.__name__ == "IntegrityError":
+                return {"msg": str(e)}, 400
+            else:
+                return {"msg": "Something went wrong"}, 500 
+        else:
+            if keys:
+                return {"keys": [key.json() for key in keys]}, 200
+            else:
+                return {"msg": "key not found"}, 404
+
+
     @validate()
     def post(self, body: KeySchema):
         try:
