@@ -34,32 +34,15 @@ API for user api keys management.
 - This endpoint needs to parse the jwt token in the request as cookie to expire the token.
 
 # Users
+
 ## Supported endpoints.
 
-### GET 
-**Accessible: Admins**
+### GET
+**Accessible: Registered Users**
 
-```method: POST host:5000/api/v1/users/<string:filter_by>```
+```method: GET host:5000/api/v1/users```
 
-| URL parameters     | Type        | Description                                                                                                 |
-| :----------------- | :---------- | :---------------------------------------------------------------------------------------------------------  |
-| `filter_by`        | `str`       | **Required.** Only one of the following must be provides: `id`, `username`, `email`, `date`, `role`, `all`. |
-
-| Query parme   | Type        | Description                                                                                 |
-| :----------------- | :---------- | :--------------------------------------------------------------------------------------|
-| `value`            | `str`       | **Required.**. The value must be provided depending on filter_by parameter.            |
-| `limit`            | `int`       | **Not Required.** Limit of elementes you want to bring on your request, default = 10.  |
-| `page`             | `int`       | **Not Required.** Number of the page you want to bring on your request, default = 1.   |
-
-
-#### Requests examples:
-
-  - ```host:5000/api/v1/users/username?value=TestUS20```
-  - ```host:5000/api/v1/users/id?value=1200```
-  - ```host:5000/api/v1/users/date?value=YYYY-MM-DD&page=3```
-  - ```host:5000/api/v1/users/email?value=test@gmail.com```
-  - ```host:5000/api/v1/users/role?value=2```
-  - ```host:5000/api/v1/users/all?page=2&limit=8```
+**Note:** In order to allow to this endpoint you need to be logged in and the user info will be retreived from user info.
 
 ### POST
 **Accessible: All**
@@ -131,6 +114,119 @@ In the other side **admin users** are allowed to modify the following parameters
 
   - ```host:5000/api/v1/users?id=XXXX```
 
+# Billings
+
+## Supported endpoints.
+
+### GET
+**Accessible: Registered Users**
+
+```method: GET host:5000/api/v1/billings```
+
+**Note:** In order to allow to this endpoint you need to be logged in and the user info will be retreived from user info.
+
+### POST
+**Accessible: Admins**
+
+```method: POST host:5000/api/v1/billings```
+
+| Body Parameters        | Type        | Description                                       |
+| :--------------------  | :---------- | :------------------------------------------------ |
+| `user_id`              | `str`       | **Required**. Id of the user.                     |
+| `balance`              | `float`     | **Not Required**. Initial balance, defualt = 100. |
+| `billing_address`      | `str`       | **Not Required**. Billing address.                |
+
+
+Body example:
+
+        {
+            "user_id": "<user_id>", 
+            "balance": "<charge to be added to current balance>",
+            "billing_address": "<billing address if diferent from address on user record>"
+        }
+                            
+**Note:** Must be application/json.
+
+### PUT
+**Accessible: Admins**
+
+```method: PUT host:5000/api/v1/billings```
+
+| Body Parameters        | Type        | Description                                       |
+| :--------------------  | :---------- | :------------------------------------------------ |
+| `user_id`              | `str`       | **Required**. Id of the user to be linked.        |
+| `balance`              | `float`     | **Not Required**. Initial balance, defualt = 100. |
+| `billing_address`      | `str`       | **Not Required**. Billing address.                |
+
+
+### DELETE
+**Accessible: Admins**
+
+```method: DELETE host:5000/api/v1/billings```
+
+| Query parameters   | Type        | Description                             |
+| :----------------- | :---------- | :-------------------------------------- |
+| `id`               | `str`       | **Required**. Id of user to be deleted. |
+
+#### Requests examples:
+
+  - ```host:5000/api/v1/billings?id=XXXX```
+
+
+## Filters available for **admin users**.
+
+### GET  -> User endpoint.
+
+```method: POST host:5000/api/v1/users/<string:filter_by>```
+
+| URL parameters     | Type        | Description                                                                                                 |
+| :----------------- | :---------- | :---------------------------------------------------------------------------------------------------------  |
+| `filter_by`        | `str`       | **Required.** Only one of the following must be provides: `id`, `username`, `email`, `date`, `role`, `all`. |
+
+| Query parme   | Type        | Description                                                                                 |
+| :----------------- | :---------- | :--------------------------------------------------------------------------------------|
+| `value`            | `str`       | **Required.**. The value must be provided depending on filter_by parameter.            |
+| `limit`            | `int`       | **Not Required.** Limit of elementes you want to bring on your request, default = 10.  |
+| `page`             | `int`       | **Not Required.** Number of the page you want to bring on your request, default = 1.   |
+
+
+### GET  -> Billing endpoint.
+
+```method: POST host:5000/api/v1/billings/<string:filter_by>```
+
+| URL parameters     | Type        | Description                                                                                |
+| :----------------- | :---------- | :------------------------------------------------------------------------------------------|
+| `filter_by`        | `str`       | **Required.** Only one of the following must be provides: `id`, `user_id`, `date`, `all`.  |
+
+| Query parme   | Type        | Description                                                                                 |
+| :----------------- | :---------- | :--------------------------------------------------------------------------------------|
+| `value`            | `str`       | **Required.**. The value must be provided depending on filter_by parameter.            |
+| `limit`            | `int`       | **Not Required.** Limit of elementes you want to bring on your request, default = 10.  |
+| `page`             | `int`       | **Not Required.** Number of the page you want to bring on your request, default = 1.   |
+
+### GET  -> Key endpoint.
+
+```method: POST host:5000/api/v1/keys/<string:filter_by>```
+
+| URL parameters     | Type        | Description                                                                                   |
+| :----------------- | :---------- | :-------------------------------------------------------------------------------------------- |
+| `filter_by`        | `str`       | **Required.** Only one of the following must be provides: `id`, `billing_id`, `date`, `all`.  |
+
+| Query parme   | Type        | Description                                                                                 |
+| :----------------- | :---------- | :--------------------------------------------------------------------------------------|
+| `value`            | `str`       | **Required.**. The value must be provided depending on filter_by parameter.            |
+| `limit`            | `int`       | **Not Required.** Limit of elementes you want to bring on your request, default = 10.  |
+| `page`             | `int`       | **Not Required.** Number of the page you want to bring on your request, default = 1.   |
+
+
+#### Requests examples:
+
+  - ```host:5000/api/v1/<route>/username?value=TestUS20```
+  - ```host:5000/api/v1/<route>/id?value=1200```
+  - ```host:5000/api/v1/<route>/date?value=YYYY-MM-DD&page=3```
+  - ```host:5000/api/v1/<route>/email?value=test@gmail.com```
+  - ```host:5000/api/v1/<route>/role?value=2```
+  - ```host:5000/api/v1/<route>/all?page=2&limit=8```
 
 
 ## Author
